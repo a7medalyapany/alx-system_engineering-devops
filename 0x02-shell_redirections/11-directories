@@ -1,9 +1,2 @@
 #!/bin/bash
-n=0
-for entry in ./* do
-	if [[ -d "$entry" && "$entry" != "." && "$entry" != ".." ]]; then
-		m=$((n + 1))
-	fi
-done
-
-echo "n"
+find . -mindepth 1 -type d |  wc -l
