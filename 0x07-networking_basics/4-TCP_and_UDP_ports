@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Use netstat to get information about listening sockets
+netstat -tuln | grep 'LISTEN'
+
+# Use lsof to find the program name and PID for each listening socket
+for port in $(netstat -tuln | grep 'LISTEN' | awk '{print $4}' | cut -d':' -f2); do
+    lsof -i :$port | awk 'NR==2 {print $2, $1}'
+done
