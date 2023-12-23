@@ -1,3 +1,5 @@
+# Description: Creates a file named 'school' in /tmp directory with specific permissions, owner, and content
+
 file { '/tmp/school':
   ensure  => file,
   mode    => '0744',
