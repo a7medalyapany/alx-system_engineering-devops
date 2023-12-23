@@ -1,8 +1,6 @@
 # Description: Kills a process
 
 exec { 'killmenow':
-  command     => 'pkill killmenow',
-  path        => '/usr/bin',
-  onlyif      => 'pgrep killmenow',
-  refreshonly => true,
+  command => '/usr/bin/pkill -9 -f killmenow',
+  onlyif  => '/usr/bin/pgrep -f killmenow',
 }
