@@ -1,4 +1,4 @@
-# Description: Kills a process named 'killmenow'
+# Description: Kills a process
 
 exec { 'killmenow':
   command     => 'pkill killmenow',
