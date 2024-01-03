@@ -1,24 +1,21 @@
 #!/usr/bin/env bash
-# Installs Nginx with the following configurations:
-# - Listens on port 80.
-# - Returns a page containing "Hello World!" when queried
-#   at the root with a curl GET request.
 
-set -euo pipefail
-
+# Update package lists and install nginx with the '-y' option for non-interactive install
 apt-get update
 apt-get install -y nginx
 
-mkdir -p /etc/nginx/html
-echo "Hello World!" > /etc/nginx/html/index.html
+# Create directory and index file with 'Hello World!' content
+echo "Hello World!" | sudo tee /var/www/html/index.html >/dev/null
 
+# Configure Nginx to listen on port 80 and serve the index file
 cat <<EOF > /etc/nginx/sites-available/default
 server {
-    listen 80;
+    listen 80 default_server;
     listen [::]:80 default_server;
-    root /etc/nginx/html;
+    root /var/www/html;
     index index.html index.htm;
 }
 EOF
 
+# Restart Nginx without using systemctl
 service nginx restart
