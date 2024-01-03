@@ -1,34 +1,64 @@
 #!/usr/bin/env bash
 
-# Install Nginx
+# Update package lists and install Nginx
 apt-get update
-apt-get -y install nginx
+apt-get install -y nginx
 
-# Create a custom 404 error page
-echo "Ceci n'est pas une page" > /usr/share/nginx/html/404.html
+# Create document root directory and set permissions
+mkdir -p /etc/nginx/html
+chmod 755 /etc/nginx/html
 
-# Configure Nginx to use the custom 404 page
+# Create default index.html file
+echo "Hello World!" > /etc/nginx/html/index.html
+
+# Create custom 404 page
+echo "Ceci n'est pas une page" > /etc/nginx/html/404.html
+
+# Configure default server block for serving files
 cat > /etc/nginx/sites-available/default <<EOF
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
-
-    root /usr/share/nginx/html;
+    root /etc/nginx/html;
     index index.html index.htm;
+
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
 
     error_page 404 /404.html;
     location = /404.html {
         internal;
     }
+}
+EOF
 
-    location / {
-        try_files \$uri \$uri/ =404;
+# Configure server block for redirection
+cat > /etc/nginx/sites-available/redirect_me <<EOF
+server {
+    listen 80;
+    listen [::]:80;
+    root /etc/nginx/html;
+    index index.html index.htm;
+
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+
+    error_page 404 /404.html;
+    location = /404.html {
+        internal;
     }
 }
 EOF
 
-# Restart Nginx
-kill -HUP $(pgrep nginx)
+# Enable site configurations by creating symbolic links
+ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/redirect_me /etc/nginx/sites-enabled/
 
-echo "Nginx configured with a custom 404 page."
+# Test Nginx configuration and reload
+nginx -t
+service nginx reload
+
+echo "Nginx installation and configuration completed."
 

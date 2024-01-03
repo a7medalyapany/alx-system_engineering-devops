@@ -1,21 +1,25 @@
 #!/usr/bin/env bash
 
-# Install Nginx (if not installed)
+# updates the package lists for available software packages.
 apt-get update
-apt-get -y install nginx
+# installs the Nginx web server.
+apt-get install -y nginx
 
-# Configure Nginx redirection
+# Creates the document root directory for Nginx and sets permissions.
+mkdir -p /etc/nginx/html
+chmod 755 /etc/nginx/html
+
+# Creates the index.html file inside the document root directory.
+echo "Hello World!" > /etc/nginx/html/index.html
+
+# Configures the default server block for serving static content.
 cat > /etc/nginx/sites-available/default <<EOF
 server {
     listen 80 default_server;
     listen [::]:80 default_server;
 
-    root /usr/share/nginx/html;
+    root /etc/nginx/html;
     index index.html index.htm;
-
-    location /redirect_me {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-    }
 
     location / {
         try_files \$uri \$uri/ =404;
@@ -23,8 +27,24 @@ server {
 }
 EOF
 
-# Restart Nginx to apply the changes
-kill -HUP $(pgrep nginx)
+# Configures a new server block for redirection.
+cat > /etc/nginx/sites-available/redirect <<EOF
+server {
+    listen 80;
+    listen [::]:80;
 
-echo "Nginx configured for redirection from /redirect_me."
+    root /var/www/html;
+
+    location /redirect_me {
+        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
+    }
+}
+EOF
+
+# Enable the new site configuration by creating a symbolic link.
+ln -s /etc/nginx/sites-available/redirect /etc/nginx/sites-enabled/
+
+# Test Nginx configuration and reload.
+nginx -t
+service nginx reload
 
