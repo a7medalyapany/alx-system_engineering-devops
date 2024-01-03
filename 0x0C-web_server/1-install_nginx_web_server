@@ -1,18 +1,28 @@
 #!/usr/bin/env bash
-# This script installs and configures Nginx on an Ubuntu server
+# Installs Nginx with the following configurations:
+#+    Listens on port 80.
+#+    Returns a page containing "Hello World!" when queried
+#++    at the root with a curl GET request.
 
-# Install Nginx
-if ! dpkg -l | grep -q nginx; then
-    apt-get update
-    apt-get -y install nginx
-fi
+#  updates the package lists for available software packages.
+apt-get update
+# installs the Nginx web server.
+apt-get install -y nginx
 
-# Configure Nginx to listen on port 80
-if ! grep -q "listen 80;" /etc/nginx/sites-available/default; then
-    sed -i '/listen 80 default_server;/a \\\tlocation / {\n\t\techo "Hello World!";\n\t}' /etc/nginx/sites-available/default
-fi
+# Creates the /etc/nginx/html directory
+mkdir /etc/nginx/html
+#  creates an empty index.html /etc/nginx/html directory.
+touch /etc/nginx/html/index.html
+#  sets the content of the index.html
+echo "Hello World!" > /etc/nginx/html/index.html
+# Sets Nginx to listen on port 80.
+printf %s "server {
+     listen      80;
+     listen      [::]:80 default_server;
+     root        /etc/nginx/html;
+     index       index.html index.htm;
+}
+" > /etc/nginx/sites-available/default
 
-# Restart Nginx without using systemctl
-kill -HUP $(pgrep -f /usr/sbin/nginx)
-
-exit 0
+# Restarts the Nginx service.
+service nginx restart
