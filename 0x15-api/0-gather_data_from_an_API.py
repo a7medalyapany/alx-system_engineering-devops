@@ -22,11 +22,12 @@ if __name__ == "__main__":
     todos = requests.get(url + "todos", params).json()
 
     # Filter and count completed tasks
-    completed = [t.get("title") for t in todos if t.get("completed") is True]
+    completed = [t.get("title") for t in todos if t.get("completed")]
 
     # Print employee's name and number of completed tasks
-    print("Employee {} completed({}/{}):".format(
+    print("Employee {} is done with tasks({}/{}):".format(
         user.get("name"), len(completed), len(todos)))
 
     # Print completed tasks with indentation
-    [print("\t {}".format(complete)) for complete in completed]
+    for task in completed:
+        print("\t{}".format(task))
