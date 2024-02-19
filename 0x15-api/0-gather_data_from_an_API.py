@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+"""Fetches data from an API and displays it for a given employee ID."""
+
 import requests
 import sys
 
