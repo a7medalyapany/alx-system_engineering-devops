@@ -1,45 +1,29 @@
 #!/usr/bin/python3
-"""Fetches data from an API and exports it to a CSV file for a given employee ID."""
+"""Exports to-do list info for a given employee ID to CSV."""
 
 import csv
 import requests
 import sys
 
-
-def fetch_employee_todo_progress(employee_id):
-    """Fetches data from an API and exports it to a CSV file for a given employee ID."""
-    url = f'https://jsonplaceholder.typicode.com/todos?userId={employee_id}'
-    response = requests.get(url)
-    todos = response.json()
-
-    if not todos:
-        print("No data found for the given employee ID.")
-        return
-
-    response = requests.get(
-        f'https://jsonplaceholder.typicode.com/users/{employee_id}')
-    employee_data = response.json()
-    employee_name = employee_data.get('username')
-
-    csv_filename = f"{employee_id}.csv"
-
-    with open(csv_filename, mode='w', newline='') as csv_file:
-        writer = csv.writer(csv_file, delimiter=',',
-                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
-        writer.writerow(['USER_ID', 'USERNAME',
-                         'TASK_COMPLETED_STATUS', 'TASK_TITLE'])
-
-        for todo in todos:
-            writer.writerow([employee_id, employee_name,
-                             todo['completed'], todo['title']])
-
-    print(f"Data exported to {csv_filename} successfully.")
-
-
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: ./export_to_CSV.py <employee_id>")
-        sys.exit(1)
+    # Get user ID from command-line args
+    user_id = sys.argv[1]
 
-    employee_id = int(sys.argv[1])
-    fetch_employee_todo_progress(employee_id)
+    # Base URL for JSON API
+    url = "https://jsonplaceholder.typicode.com/"
+
+    # Fetch user info from API
+    user = requests.get(url + "users/{}".format(user_id)).json()
+
+    # Extract username
+    username = user.get("username")
+
+    # Fetch to-do list items for user ID
+    todos = requests.get(url + "todos", params={"userId": user_id}).json()
+
+    # Write to-do list details to CSV
+    with open("{}.csv".format(user_id), "w", newline="") as csvfile:
+        writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
+        [writer.writerow(
+            [user_id, username, t.get("completed"), t.get("title")]
+        ) for t in todos]
