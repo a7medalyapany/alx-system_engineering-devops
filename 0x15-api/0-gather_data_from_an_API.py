@@ -5,35 +5,30 @@ import requests
 import sys
 
 
-def fetch_employee_todo_progress(employee_id):
+def get_employee_todo_progress(employee_id):
     """Fetches data from an API and displays it for a given employee ID."""
-    url = f'https://jsonplaceholder.typicode.com/todos?userId={employee_id}'
-    response = requests.get(url)
-    todos = response.json()
+    base_url = "https://jsonplaceholder.typicode.com/todos"
+    response = requests.get(base_url, params={"userId": employee_id})
 
-    if not todos:
-        print("No data found for the given employee ID.")
+    if response.status_code != 200:
+        print("Error: Unable to fetch data from the API")
         return
 
+    todos = response.json()
     total_tasks = len(todos)
-    completed_tasks = sum(1 for todo in todos if todo['completed'])
-
-    response = requests.get(
-        f'https://jsonplaceholder.typicode.com/users/{employee_id}')
-    employee_data = response.json()
-    employee_name = employee_data.get('name')
+    completed_tasks = [todo for todo in todos if todo['completed']]
+    num_completed_tasks = len(completed_tasks)
+    employee_name = todos[0]['username'] if todos else "Unknown"
 
     print(
-        f"Employee {employee_name} is done with tasks ({completed_tasks}/{total_tasks}):")
-    for todo in todos:
-        if todo['completed']:
-            print(f"\t{todo['title']}")
+        f"Employee {employee_name} is done with tasks ({num_completed_tasks}/{total_tasks}):")
+    for todo in completed_tasks:
+        print(f"\t{todo['title']}")
 
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: ./gather_data_from_an_API.py <employee_id>")
-        sys.exit(1)
-
-    employee_id = int(sys.argv[1])
-    fetch_employee_todo_progress(employee_id)
+        print("Usage: python script.py <employee_id>")
+    else:
+        employee_id = int(sys.argv[1])
+        get_employee_todo_progress(employee_id)
