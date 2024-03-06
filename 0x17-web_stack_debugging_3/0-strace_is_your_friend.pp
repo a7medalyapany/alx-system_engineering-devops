@@ -1,17 +1,6 @@
-# Puppet manifest to fix Apache 500 Internal Server Error
+# Fixes bad `phpp` extensions to `php`
 
-# Fix file permissions
-file { '/var/www/html':
-  ensure  => 'directory',
-  recurse => 'true',
-  owner   => 'www-data',
-  group   => 'www-data',
-  mode    => '0755',
-}
-
-# Restart Apache service
-service { 'apache2':
-  ensure  => 'running',
-  enable  => 'true',
-  require => File['/var/www/html'],
+exec { 'fix-wordpress':
+  command => 'sed -i s/phpp/php/g /var/www/html/wp-settings.php',
+  path    => '/usr/local/bin/:/bin/'
 }
