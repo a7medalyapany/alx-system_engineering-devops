@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 """
-Module to fetch and print a sorted count of given keywords in the titles
- of all hot articles
-for a given subreddit using recursion.
+Module to fetch and print a sorted count of given keywords
 """
 
 import requests
@@ -11,13 +9,10 @@ import requests
 def count_words(subreddit, word_list, after=None, counts=None):
     """
     Recursive function to count the occurrences of given keywords
-        in the titles of all hot articles 
-        for a given subreddit.
-
     Args:
-        subreddit: A string representing the name of the subreddit.
-        word_list: A list of keywords to count occurrences of.
-        after: A string representing the "after" parameter for pagination.
+        subreddit: A string representing the name .
+        word_list: A list of keywords to count occurrences.
+        after: A string representing the "after" parameter.
         counts: A dictionary to store the counts of each keyword.
 
     Returns:
@@ -28,11 +23,11 @@ def count_words(subreddit, word_list, after=None, counts=None):
 
     url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=100"
     headers = {
-        'User-Agent': 'python3:subreddit.subscriber.counter:v1.0 (by /user/alyapany)'}
+        'User-Agent':
+        'python3:subreddit.subscriber.counter:v1.0 (by /user/alyapany)'}
     params = {"after": after} if after else {}
     response = requests.get(url, headers=headers, params=params)
 
-    # Check if the subreddit exists
     if response.status_code == 200:
         data = response.json()
         posts = data['data']['children']
