@@ -1,11 +1,17 @@
-# Puppet manifest to fix Apache 500 error
-file { '/etc/apache2/sites-available/your_website.conf':
-  ensure => file,
-  source => 'puppet:///modules/your_module/your_website.conf',
-  notify => Exec['restart_apache'],
+# Puppet manifest to fix Apache 500 Internal Server Error
+
+# Fix file permissions
+file { '/var/www/html':
+  ensure  => 'directory',
+  recurse => 'true',
+  owner   => 'www-data',
+  group   => 'www-data',
+  mode    => '0755',
 }
 
-exec { 'restart_apache':
-  command     => '/usr/sbin/service apache2 restart',
-  refreshonly => true,
+# Restart Apache service
+service { 'apache2':
+  ensure  => 'running',
+  enable  => 'true',
+  require => File['/var/www/html'],
 }
