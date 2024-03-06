@@ -21,7 +21,6 @@ def number_of_subscribers(subreddit):
         'User-Agent': 'python3:subreddit.subscriber.counter:v1.0 (by /user/alyapany)'}
     response = requests.get(url, headers=headers)
 
-    # Check if the subreddit exists
     if response.status_code == 200:
         data = response.json()
         return data['data']['subscribers']
