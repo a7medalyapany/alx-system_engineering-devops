@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """
-Module to fetch and return a list containing
-the titles of all hot articles for a given subreddit using recursion.
+Module to fetch and return a list containing titles
 """
 
 import requests
@@ -9,21 +8,19 @@ import requests
 
 def recurse(subreddit, hot_list=[], after=None):
     """
-    Recursive function to retrieve and return
-        a list containing the titles of all hot articles for a given subreddit.
-
+    Recursive function to retrieve and return list of title
     Args:
-        subreddit: A string representing the name of the subreddit.
-        hot_list: A list to store the titles of hot articles.
-        after: A string representing the "after" parameter for pagination.
+        subreddit: A string representing the name.
+        hot_list: A list to store the titles.
+        after: A string representing the "after" parameter.
 
     Returns:
         A list containing the titles of all hot articles
-                for the given subreddit, or None if the subreddit is invalid.
     """
     url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=100"
     headers = {
-        'User-Agent': 'python3:subreddit.subscriber.counter:v1.0 (by /user/alyapany)'}
+        'User-Agent':
+        'python3:subreddit.subscriber.counter:v1.0 (by /user/alyapany)'}
     params = {"after": after} if after else {}
     response = requests.get(url, headers=headers, params=params)
 
