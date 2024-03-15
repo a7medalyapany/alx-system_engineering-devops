@@ -1,7 +1,20 @@
-events {}
-http {
-     keepalive_timeout 30s;
-     worker_processes auto;
-     client_body_buffer_size 8k;
-    client_header_buffer_size 1k;
-    proxy_buffer_size 16k;
+# Fix for optimizing Nginx performance
+
+file { '/etc/nginx/nginx.conf':
+  ensure  => file,
+  content => file('/etc/nginx/nginx.conf'),
+  replace => 'on',
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+  notify  => Service['nginx'],
+}
+
+exec { 'fix--for-nginx':
+  command     => 'sed -i "s/sendfile on/sendfile off/" /etc/nginx/nginx.conf',
+  path        => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+  refreshonly => true,
+}
+
+service { 'nginx':
+  ensure    => 'running',
+  enable    => true,
+}
